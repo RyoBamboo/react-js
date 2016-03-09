@@ -1,61 +1,73 @@
 var React = require('react');
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
+var IndexRoute = ReactRouter.IndexRoute;
+var History = ReactRouter.History;
 var ReactDOM = require('react-dom');
-var AppBar = require('material-ui/lib/app-bar');
 
-const style = {
-    margin: 0,
-};
+var Header = require('./header.jsx');
+var Body = require('./body.jsx');
+var UserBox = require('./userbox.jsx');
 
-var App = React.createClass({
+var hashHistory = ReactRouter.hashHistory;
+
+var Index = React.createClass({
+    render: function() {
+        return (
+            <div>
+                {this.props.children}
+            </div>
+        )
+    }
+});
+
+var Top = React.createClass({
+    contextTypes: {
+        router: React.PropTypes.object.isRequired
+    },
+    render: function() {
+        return (
+            <div>
+                <div className="main">
+                    <h1>ログイン</h1>
+                    <form>
+                        <input placeholder="userid" />
+                        <input placeholder="password" />
+                        <button type="submit">ログイン</button>
+                    </form>
+                </div>
+            </div>
+        )
+    }
+});
+
+
+var Main = React.createClass({
     render: function() {
         return (
             <div>
                 <Header />
-                <Container />
-                <Footer />
+                <div className="main">
+                    {this.props.children}
+                </div>
             </div>
         )
     }
 });
 
-var Header = React.createClass({
-    render: function() {
-        return (
-            <div>
-                <AppBar
-                    title="Title"
-                />
-            </div>
-        )
-    }
-});
+var Routes = (
+    <Route path="/" component={Index}>
+        <IndexRoute component={Top} />
+        <Route path="/top" component={Top}/>
+        <Route path="/portal" component={Main}>
+            <IndexRoute component={Body} />
+            <Route path="/userbox" component={UserBox}/>
+        </Route>
+    </Route>
+);
 
-var Container = React.createClass({
-    render: function() {
-        return (
-            <div>
-            </div>
-        )
-    }
-});
-
-var Footer = React.createClass({
-    render: function() {
-        return (
-            <div className="footer">
-            </div>
-        )
-    }
-});
-
-var Hello = React.createClass({
-    render: function() {
-        return(
-            <div>
-                <RaisedButton label="START" secondary={true} style={style} />
-            </div>
-        )
-    }
-});
-
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(
+    <Router history={hashHistory}>{Routes}</Router>,
+    document.getElementById('app')
+);
